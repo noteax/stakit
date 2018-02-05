@@ -48,7 +48,7 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - v1-ui-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-app-ui-{{ .Environment.CIRCLE_SHA1 }}
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker build -t noteax/stakit:latest .
       - run: docker push noteax/stakit:latest
