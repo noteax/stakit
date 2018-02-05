@@ -2,7 +2,7 @@ version: 2
 jobs:
 
   checkout_code:
-   working_directory: ~/stakit
+  working_directory: ~/stakit
     steps:
       - checkout
 
@@ -23,15 +23,14 @@ jobs:
       - run: npm run-script build
 
   build_images:
-   machine: true
-   working_directory: ~/stakit
-   steps:
-     - checkout
-     - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
-     - run: docker build -t noteax/stakit:latest .
-     - run: docker push noteax/stakit:latest
-
-
+    machine: true
+    working_directory: ~/stakit
+    steps:
+      - checkout
+      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run: docker build -t noteax/stakit:latest .
+      - run: docker push noteax/stakit:latest
+      
 workflows:
   version: 2
   build-all:
