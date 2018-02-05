@@ -12,7 +12,7 @@ jobs:
           paths:
             - ~/stakit
 
-  build:
+  build_app:
     docker:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/stakit/stakit
@@ -59,7 +59,7 @@ workflows:
   build-all:
     jobs:
       - checkout_code
-      - build
+      - build_app
           requires:
             - checkout_code
       - build_ui
@@ -67,7 +67,7 @@ workflows:
             - checkout_code
       - build_images
           requires:
-            - build
+            - build_app
             - build_ui
       - deploy
           requires:
