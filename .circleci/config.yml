@@ -34,12 +34,18 @@ jobs:
       - restore_cache:
           keys:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+            - node-modules-{{checksum package.json}}
+      - run: npm set progress=false
       - run: npm install
       - run: npm run-script build
       - save_cache:
           key: v1-ui-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/stakit
+       - save_cache:
+          key: node-modules-{{checksum package.json}
+          paths:
+            - "node_modules"
 
   build_images:
     machine: true
