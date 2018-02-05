@@ -15,12 +15,12 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8-jdk
-    working_directory: ~/stakit/
+    working_directory: ~/stakit/stakit
     steps:
       - restore_cache:
           keys:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: cd stakit && gradle shadowJar
+      - run: gradle shadowJar
       - save_cache:
           key: v1-app-{{ .Environment.CIRCLE_SHA1 }}
           paths:
@@ -34,6 +34,7 @@ jobs:
       - restore_cache:
           keys:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: npm install
       - run: npm run-script build
       - save_cache:
           key: v1-ui-{{ .Environment.CIRCLE_SHA1 }}
@@ -59,9 +60,15 @@ workflows:
     jobs:
       - checkout_code
       - build
+          requires:
+            - checkout_code
       - build_ui
+          requires:
+            - checkout_code
       - build_images
+          requires:
+            - build
+            - build_ui
       - deploy
-
-
-
+          requires:
+            - build_images
