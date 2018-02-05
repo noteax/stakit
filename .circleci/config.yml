@@ -33,19 +33,14 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-            - node-modules
+            - v1-app-{{ .Environment.CIRCLE_SHA1 }}
       - run: npm set progress=false
       - run: npm install
       - run: npm run-script build
       - save_cache:
-          key: v1-ui-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-app-ui-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/stakit
-      - save_cache:
-          key: node-modules
-          paths:
-            - ~/stakit/stakit-ui/node_modules
 
   build_images:
     machine: true
@@ -53,8 +48,6 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-            - v1-app-{{ .Environment.CIRCLE_SHA1 }}
             - v1-ui-{{ .Environment.CIRCLE_SHA1 }}
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker build -t noteax/stakit:latest .
@@ -70,10 +63,9 @@ workflows:
             - checkout_code
       - build_ui:
           requires:
-            - checkout_code
+            - build_app
       - build_images:
           requires:
-            - build_app
             - build_ui
       - deploy:
           requires:
