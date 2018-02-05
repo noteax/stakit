@@ -8,9 +8,9 @@ jobs:
     steps:
       - checkout
       - save_cache:
-        key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-        paths:
-          - ~/stakit
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/stakit
 
   build:
     docker:
@@ -18,13 +18,13 @@ jobs:
     working_directory: ~/stakit/
     steps:
       - restore_cache:
-        keys:
-          - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: cd stakit && gradle shadowJar
       - save_cache:
-        key: v1-app-{{ .Environment.CIRCLE_SHA1 }}
-        paths:
-          - ~/stakit
+          key: v1-app-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/stakit
 
   build_ui:
     docker:
@@ -32,23 +32,23 @@ jobs:
     working_directory: ~/stakit/stakit-ui
     steps:
       - restore_cache:
-        keys:
-          - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: npm run-script build
       - save_cache:
-        key: v1-ui-{{ .Environment.CIRCLE_SHA1 }}
-        paths:
-          - ~/stakit
+          key: v1-ui-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/stakit
 
   build_images:
     machine: true
     working_directory: ~/stakit
     steps:
       - restore_cache:
-        keys:
-          - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-          - v1-app-{{ .Environment.CIRCLE_SHA1 }}
-          - v1-ui-{{ .Environment.CIRCLE_SHA1 }}
+          keys:
+            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-app-{{ .Environment.CIRCLE_SHA1 }}
+            - v1-ui-{{ .Environment.CIRCLE_SHA1 }}
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run: docker build -t noteax/stakit:latest .
       - run: docker push noteax/stakit:latest
