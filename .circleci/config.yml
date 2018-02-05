@@ -1,37 +1,45 @@
 version: 2
 jobs:
 
+  checkout_code:
+   working_directory: ~/stakit
+    steps:
+      - checkout
+
   build:
     docker:
       - image: circleci/openjdk:8-jdk
-    working_directory: ~/stakit
+    working_directory: ~/stakit/stakit
     steps:
       - checkout
       - run: gradle shadowJar
 
-  build-ui:
+  build_ui:
     docker:
       - image: circleci/node:4.8.2
-    working_directory: ~/stakit-ui
+    working_directory: ~/stakit/stakit-ui
      steps:
       - checkout
       - run: npm run-script build
 
-  build-images:
+  build_images:
    machine: true
+   working_directory: ~/stakit
    steps:
      - checkout
      - run: docker login -u $DOCKER_USER -p $DOCKER_PASS
      - run: docker build -t noteax/stakit:latest .
      - run: docker push noteax/stakit:latest
 
+
 workflows:
   version: 2
   build-all:
     jobs:
+      - checkout_code
       - build
-      - build-ui
-      - build-images
+      - build_ui
+      - build_images
       - deploy
 
 
