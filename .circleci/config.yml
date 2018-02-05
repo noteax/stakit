@@ -48,8 +48,7 @@ jobs:
             - ~/stakit/stakit-ui/node_modules
 
   build_images:
-    docker:
-      - image: circleci/openjdk:8-jdk
+    machine: true
     working_directory: ~/stakit
     steps:
       - restore_cache:
