@@ -53,6 +53,12 @@ jobs:
       - run: docker build -t noteax/stakit:latest .
       - run: docker push noteax/stakit:latest
 
+  deploy:
+    machine: true
+    working_directory: ~/stakit
+    sptes:
+      - ssh root@174.138.2.93 'docker stop stakit-container; docker rm stakit-container; docker pull noteax/stakit && docker run -d --name stakit-container -p 80:8080 noteax/stakit'
+
 workflows:
   version: 2
   build-all:
