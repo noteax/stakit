@@ -45,10 +45,11 @@ jobs:
       - save_cache:
           key: node-modules-{{checksum package.json}
           paths:
-            - "node_modules"
+            - ~/stakit/stakit-ui/node_modules
 
   build_images:
-    machine: true
+    docker:
+      - image: circleci/openjdk:8-jdk
     working_directory: ~/stakit
     steps:
       - restore_cache:
