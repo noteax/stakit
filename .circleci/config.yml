@@ -56,7 +56,7 @@ jobs:
   deploy:
     machine: true
     working_directory: ~/stakit
-    sptes:
+    steps:
       - ssh root@174.138.2.93 'docker stop stakit-container; docker rm stakit-container; docker pull noteax/stakit && docker run -d --name stakit-container -p 80:8080 noteax/stakit'
 
 workflows:
