@@ -1,6 +1,6 @@
 import React, { Component} from "react";
 import ReactDOM from "react-dom";
-import AnswersContainer2 from "./AnswersContainer2";
+import AnswersContainer from "./AnswersContainer";
 import { Search, Item, Divider } from 'semantic-ui-react';
 import Answer from "../presentational/Answer";
 import qwest from 'qwest';
@@ -9,72 +9,50 @@ class StakitContainer extends Component {
   constructor() {
     super();
     this.state = {
+        text: "",
         foundElements: []
-    };  
-
+    };
   }
 
-  loadItems(page, dataFun) {
-    var url = 'http://api.stackexchange.com/2.2/search?page='+page+'&pagesize=50&key=U4DMV*8nvpm3EOpvf69Rxw((&site=stackoverflow&order=desc&sort=activity&intitle=java&filter=default';
-        qwest.get(url, {
-                cache: true
-            })
+  loadItems(page, text, dataCallback) {
+    var url = window.location.href + 'search?page='+page+'&limit=50&text='+text;
+        qwest.get(url)
             .then(function(xhr, resp) {
                 if(resp) {
-                    var items = resp.items.map((item) => {
-                        return {
-                        	id: item.question_id,
-                        	image: item.owner.profile_image,
-                        	externalLink: item.link,
-                        	title: item.title,
-                        	answered: item.is_answered,
-                        	creationDate: item.creation_date
-                        };
-                    });
-                    dataFun({
-                	  elements: items,
-                	  hasMore: resp.has_more
-                    });
+                    dataCallback(resp);
                 }
             }).catch(function(err) {
-            	console.log("Error loading elements "+err);
+                console.log("Error loading elements "+err);
             });
   }
 
-handleSearchChange(e, { value }) {
-	var self = this
-    var url = 'http://api.stackexchange.com/2.2/search?page=1&pagesize=50&key=U4DMV*8nvpm3EOpvf69Rxw((&site=stackoverflow&order=desc&sort=activity&intitle='+value+'&filter=default';
-        qwest.get(url, {
-                cache: true
-            })
-            .then(function(xhr, resp) {
-                if(resp) {
-                    var items = resp.items.map((item) => {
-                        return {
-                        	id: item.question_id,
-                        	image: item.owner.profile_image,
-                        	externalLink: item.link,
-                        	title: item.title,
-                        	answered: item.is_answered,
-                        	creationDate: item.creation_date
-                        };
-                    });
-                    self.setState({
-                    	foundElements: items
-                    });
-                }
-            }).catch(function(err) {
-            	console.log("Error loading elements "+err);
-            });
-}
+  loadAdditionalItems(page, dataFun) {
+    this.loadItems(page, this.state.text, dataFun);
+  }
 
+  handleSearchChange(e, { value }) {
+    var self = this
+    if (value.length < 3) {
+        self.setState({
+                        foundElements: [],
+                        text: value
+                    });
+    } else {
+      self.loadItems(1, value, function(data) {
+        self.setState({
+                        foundElements: data.items,
+                        text: value
+                    });
+      });
+    }
+  }
 
   render() {
     return (
       <div>
         <div className="ui inverted vertical masthead center aligned segment">
           <div className="ui text container">
-            <h1 className="ui inverted header">Stakit - search stakexchange forums</h1>
+            <h1 className="ui inverted header">Stakit - search stakexchange forums. CD works!</h1>
             <Search 
                      showNoResults={false} 
                      onSearchChange={this.handleSearchChange.bind(this)}/>
@@ -82,8 +60,8 @@ handleSearchChange(e, { value }) {
         </div>
 
         <Divider hidden={true}/>
-          <AnswersContainer2 
-             loadPage={this.loadItems.bind(this)}
+          <AnswersContainer 
+             loadPage={this.loadAdditionalItems.bind(this)}
              elements={this.state.foundElements}
             />
         </div>

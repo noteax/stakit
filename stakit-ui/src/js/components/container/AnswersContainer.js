@@ -1,59 +1,71 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import Infinite from "react-infinite"
+import InfiniteScroll from "react-infinite-scroller";
 import Answer from "../presentational/Answer";
+import { Message, Container } from 'semantic-ui-react';
 
 class AnswersContainer extends Component {
 
-  constructor() {
-    super();
-    this.state = {
-      elements: this.buildElements(0, 20),
-      isInfiniteLoading: false
-    };
-    this.handleInfiniteLoad = this.handleInfiniteLoad.bind(this);
-    this.elementInfiniteLoad = this.elementInfiniteLoad.bind(this);
-  }
+    constructor(props) {
+        super(props);
 
-    buildElements(start, end) {
-        var elements = [];
-        for (var i = start; i < end; i++) {
-            elements.push(<Answer key={i} keyVal="Hahaha"/>)
-        }
-        return elements;
+        this.state = {
+            elements: this.props.elements,
+            hasMore: this.props.elements.length != 0,
+            loadPage: this.props.loadPage
+        };   
     }
 
-    handleInfiniteLoad() {
-        var that = this;
-        this.setState({
-            isInfiniteLoading: true
+    componentWillReceiveProps(nextProps) {
+      this.setState({
+        elements: nextProps.elements,
+        hasMore: nextProps.elements.length != 0
+      })
+    }
+
+    loadItems(page) {
+      var self = this;
+      this.props.loadPage(page, (data) => {
+        self.setState({
+          elements: self.state.elements.concat(data.elements),
+          hasMore: data.hasMore
         });
-        setTimeout(function() {
-            var elemLength = that.state.elements.length,
-                newElements = that.buildElements(elemLength, elemLength + 100);
-            that.setState({
-                isInfiniteLoading: false,
-                elements: that.state.elements.concat(newElements)
-            });
-        }, 2500);
-    }
-
-    elementInfiniteLoad() {
-        return <div className="infinite-list-item">
-            Loading...
-        </div>;
+      });
+      
     }
 
     render() {
-        return <Infinite elementHeight={20}
-                         containerHeight={250}
-                         infiniteLoadingBeginBottomOffset={20}
-                         onInfiniteLoad={this.handleInfiniteLoad}
-                         loadingSpinnerDelegate={this.elementInfiniteLoad()}
-                         isInfiniteLoading={this.state.isInfiniteLoading}
-                         >
-            {this.state.elements}
-        </Infinite>;
+        if (this.state.elements.length == 0) {
+         return <Container textAlign={"center"}><Message compact warning>No results found.</Message></Container>;
+        }
+
+        const loader = <div className="loader">Loading ...</div>;
+
+        
+        var answers = [];
+        this.state.elements.map(element => {
+            console.log(element);
+            answers.push(
+                  <Answer
+                    image={element.image}
+                    externalLink={element.externalLink}
+                    title={element.title}
+                    answered={element.answered}
+                    creationDate={element.creationDate}
+                    />);
+        });
+
+        return <div className="ui text container">
+               <InfiniteScroll
+                  pageStart={0}
+                  loadMore={this.loadItems.bind(this)}
+                  hasMore={this.state.hasMore}
+                  loader={loader}>
+                    <div className="ui divided items">
+                           {answers}
+                    </div>
+                </InfiniteScroll>
+                </div> ;
     }
 }
 export default AnswersContainer;
