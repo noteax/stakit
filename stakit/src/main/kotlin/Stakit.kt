@@ -90,9 +90,11 @@ fun Application.main(pathToStatic: String) {
 
 private fun convert(stackexchangeResponse: String): SearchResponse {
     val root = JsonParser().parse(stackexchangeResponse).getAsJsonObject()
+
     return SearchResponse(root.getAsJsonArray("items").map { item ->
+        val owner = item.asJsonObject.getAsJsonObject("owner")
         Answer(item.asJsonObject.get("question_id").asLong,
-                item.asJsonObject.getAsJsonObject("owner")["profile_image"].asString,
+                if (owner.has("profile_image")) owner["profile_image"].asString else "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQv-XExE8ccRtmLq1_AtqowFjK54WwD424B9m5m_m7t3kCT5hPm",
                 item.asJsonObject.get("link").asString,
                 item.asJsonObject.get("title").asString,
                 item.asJsonObject.get("is_answered").asBoolean,

@@ -1,19 +1,24 @@
-import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.server.testing.*
+import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.withTestApplication
 import org.junit.Test
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class ApplicationTest {
 
     @Test
     fun testRequest() = withTestApplication({ main("") }) {
-        with(handleRequest(HttpMethod.Get, "/search?page=1&limit=50&text=kotlin") {
-            addHeader("Accept", "application/json")
-        }) {
-            assertNotNull(response.content)
-            assertTrue(response.content!!.isNotEmpty())
-            assertEquals(HttpStatusCode.OK, response.status())
+        for (i in 1 until 10) {
+            with(handleRequest(HttpMethod.Get, "/search?page=$i&limit=50&text=kotlin") {
+                addHeader("Accept", "application/json")
+            }) {
+                assertNotNull(response.content)
+                assertTrue(response.content!!.isNotEmpty())
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
         }
     }
 

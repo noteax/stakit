@@ -2,16 +2,27 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { Item, Icon, Image as ImageComponent} from 'semantic-ui-react';
+import moment from 'moment';
 
-const Answer = ({ image, externalLink, title, answered, creationDate }) => (
-	 <Item>
-      <Item.Image size='tiny' src={image}/>
-      <Item.Content verticalAlign='middle'>
-        <Item.Header>{title}</Item.Header>
-        <Item.Extra><Icon color='green' name='check'/> Answered</Item.Extra>
-      </Item.Content>
-    </Item>
-);
+class Answer extends Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+     return (
+       <Item>
+       <Item.Image size='tiny' src={this.props.image}/>
+         <Item.Content verticalAlign='middle'>
+            <Item.Header as='a' href={this.props.externalLink}>{this.props.title}</Item.Header>
+            <Item.Extra>Created {moment(this.props.creationDate*1000).fromNow()}</Item.Extra>
+            {(this.props.answered) ? <Item.Extra><Icon color='green' name='check'/> Answered</Item.Extra> : ''}
+         </Item.Content>
+        </Item>
+    );
+  }
+
+}
 
 Answer.propTypes = {
   image:        PropTypes.string.isRequired,

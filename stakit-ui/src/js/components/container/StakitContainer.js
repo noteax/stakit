@@ -52,7 +52,7 @@ class StakitContainer extends Component {
       <div>
         <div className="ui inverted vertical masthead center aligned segment">
           <div className="ui text container">
-            <h1 className="ui inverted header">Stakit - search stakexchange forums. CD works!</h1>
+            <h1 className="ui inverted header">Stakit - search stakexchange forums.</h1>
             <Search 
                      showNoResults={false} 
                      onSearchChange={this.handleSearchChange.bind(this)}/>

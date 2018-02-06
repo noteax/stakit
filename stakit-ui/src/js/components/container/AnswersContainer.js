@@ -27,7 +27,7 @@ class AnswersContainer extends Component {
       var self = this;
       this.props.loadPage(page, (data) => {
         self.setState({
-          elements: self.state.elements.concat(data.elements),
+          elements: self.state.elements.concat(data.items),
           hasMore: data.hasMore
         });
       });
@@ -41,23 +41,19 @@ class AnswersContainer extends Component {
 
         const loader = <div className="loader">Loading ...</div>;
 
-        
-        var answers = [];
-        this.state.elements.map(element => {
-            console.log(element);
-            answers.push(
-                  <Answer
+        var answers = this.state.elements.map(element => {
+                  return <Answer
                     image={element.image}
                     externalLink={element.externalLink}
                     title={element.title}
                     answered={element.answered}
                     creationDate={element.creationDate}
-                    />);
+                    />;
         });
 
         return <div className="ui text container">
                <InfiniteScroll
-                  pageStart={0}
+                  pageStart={1}
                   loadMore={this.loadItems.bind(this)}
                   hasMore={this.state.hasMore}
                   loader={loader}>
